@@ -452,7 +452,7 @@ THREE.OBJLoader = ( function () {
 						console.error( e );
 
 					}
-
+					console.error(e);
 					scope.manager.itemError( url );
 
 				}

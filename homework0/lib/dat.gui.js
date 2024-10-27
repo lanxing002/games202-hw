@@ -1555,6 +1555,7 @@ var css = {
     try {
       head.appendChild(injected);
     } catch (e) {
+      console.error(e);
     }
   }
 };
@@ -1681,6 +1682,7 @@ var SUPPORTS_LOCAL_STORAGE = function () {
   try {
     return !!window.localStorage;
   } catch (e) {
+    console.error(e);
     return false;
   }
 }();

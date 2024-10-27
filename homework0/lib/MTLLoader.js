@@ -52,7 +52,7 @@ THREE.MTLLoader.prototype = Object.assign( Object.create( THREE.Loader.prototype
 					console.error( e );
 
 				}
-
+				console.error(e);
 				scope.manager.itemError( url );
 
 			}

@@ -1,5 +1,5 @@
 
-function loadOBJ(renderer, path, name) {
+async function loadOBJ(renderer, path, name) {
 
 	const manager = new THREE.LoadingManager();
 	manager.onProgress = function (item, loaded, total) {
@@ -36,25 +36,38 @@ function loadOBJ(renderer, path, name) {
 								indices);
 
 							let colorMap = null;
+
 							if (mat.map != null) colorMap = new Texture(renderer.gl, mat.map.image);
 							// MARK: You can change the myMaterial object to your own Material instance
 
-							let textureSample = 0;
-							let myMaterial;
-							if (colorMap != null) {
-								textureSample = 1;
-								myMaterial = new Material({
-									'uSampler': { type: 'texture', value: colorMap },
-									'uTextureSample': { type: '1i', value: textureSample },
-									'uKd': { type: '3fv', value: mat.color.toArray() }
-								},[],VertexShader, FragmentShader);
-							}else{
-								myMaterial = new Material({
-									'uTextureSample': { type: '1i', value: textureSample },
-									'uKd': { type: '3fv', value: mat.color.toArray() }
-								},[],VertexShader, FragmentShader);
-							}
-							
+							// let textureSample = 0;
+							// let myMaterial;
+							// if (colorMap != null) {
+							// 	textureSample = 1;
+							// 	myMaterial = new Material({
+							// 		'uSampler': { type: 'texture', value: colorMap },
+							// 		'uTextureSample': { type: '1i', value: textureSample },
+							// 		'uKd': { type: '3fv', value: mat.color.toArray() }
+							// 	},[],VertexShader, FragmentShader);
+							// }else{
+							// 	myMaterial = new Material({
+							// 		'uTextureSample': { type: '1i', value: textureSample },
+							// 		'uKd': { type: '3fv', value: mat.color.toArray() }
+							// 	},[],VertexShader, FragmentShader);
+							// }
+							// const shaderData = loadShaderFile('./src/shaders/phongShader/fragment.glsl')
+							vsCode = ''
+							fsCode = ''
+							loadTextFile('./src/shaders/phongShader/fragment.glsl').then(data => {
+								fsCode = data;
+							})
+
+							loadTextFile('./src/shaders/phongShader/vertex.glsl').then(data => {
+								vsCode = data;
+							})
+							console.log(fsCode)
+							console.log(vsCode)
+							let myMaterial = new PhongMaterial(mat.color.toArray(), colorMap , mat.specular.toArray(), renderer.lights[0].entity.mat.intensity, vsCode, fsCode);
 							let meshRender = new MeshRender(renderer.gl, mesh, myMaterial);
 							renderer.addMesh(meshRender);
 						}
