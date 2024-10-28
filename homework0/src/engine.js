@@ -12,7 +12,7 @@ function GAMES202Main() {
 		return;
 	}
 
-	const camera = new THREE.PerspectiveCamera(75, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 1000);
+	const camera = new THREE.PerspectiveCamera(120, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 1000);
 	const cameraControls = new THREE.OrbitControls(camera, canvas);
 	cameraControls.enableZoom = true;
 	cameraControls.enableRotate = true;
@@ -24,6 +24,7 @@ function GAMES202Main() {
 	function setSize(width, height) {
 		camera.aspect = width / height;
 		camera.updateProjectionMatrix();
+		console.log('resize to', width, height)
 	}
 	setSize(canvas.clientWidth, canvas.clientHeight);
 	window.addEventListener('resize', () => setSize(canvas.clientWidth, canvas.clientHeight));
