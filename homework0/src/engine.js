@@ -32,7 +32,7 @@ function GAMES202Main() {
 	camera.position.set(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
 	cameraControls.target.set(0, 1, 0);
 
-	const pointLight = new PointLight(250, [1, 1, 1]);
+	const pointLight = new PointLight(250, [1, 0, 1]);
 
 	const renderer = new WebGLRenderer(gl, camera);
 	renderer.addLight(pointLight);
