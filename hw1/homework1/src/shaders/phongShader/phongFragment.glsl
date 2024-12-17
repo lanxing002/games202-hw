@@ -89,7 +89,8 @@ float findBlocker( sampler2D shadowMap,  vec2 uv, float zReceiver ) {
 
 float useShadowMap(sampler2D shadowMap, vec4 coords){
   vec4 packedDepth = texture2D(shadowMap, coords.xy);
-  float sd = unpack(packedDepth) +  0.0005;
+  float sd = unpack(packedDepth) + 0.11;
+  sd = packedDepth.x + 0.01;
   return sd > coords.z ? 1.0 : 0.0;
 }
 
