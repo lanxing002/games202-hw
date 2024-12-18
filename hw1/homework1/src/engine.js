@@ -44,7 +44,7 @@ function GAMES202Main() {
 
 	// Add lights
 	// light - is open shadow map == true
-	let lightPos = [0, 100, 80];
+	let lightPos = [140, 100, 140];
 	let focalPoint = [0, 0, 0];
 	let lightUp = [0, 1, 0]
 	const directionLight = new DirectionalLight(5000, [1, 1, 1], lightPos, focalPoint, lightUp, true, renderer.gl);
@@ -72,9 +72,13 @@ function GAMES202Main() {
 
 	function createGUI() {
 		const gui = new dat.gui.GUI();
-		// const panelModel = gui.addFolder('Model properties');
-		// panelModelTrans.add(GUIParams, 'x').name('X');
-		// panelModel.open();
+		const panelModel = gui.addFolder('Light properties');
+		const panelModelTrans = panelModel.addFolder('Translation');
+		panelModelTrans.add(directionLight.lightPos, 0).name('x');
+		panelModelTrans.add(directionLight.lightPos, 1).name('y');
+		panelModelTrans.add(directionLight.lightPos, 2).name('z');
+		panelModel.open();
+		panelModelTrans.open();
 	}
 	createGUI();
 

@@ -22,7 +22,9 @@ void main(){
 
   //gl_FragColor = vec4( 1.0, 0.0, 0.0, gl_FragCoord.z);
   gl_FragColor = pack(gl_FragCoord.z);
-  gl_FragColor.xyz = vec3(gl_FragCoord.z);
+  //gl_FragColor.xyz = vec3(gl_FragCoord.z);
+  //gl_FragColor.y = .0;
+  //gl_FragColor.z = .0;
   // gl_FragColor.xyz = vec3(gl_FragCoord.z);
   // gl_FragColor.w = 1.0;
 }

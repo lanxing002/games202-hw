@@ -14,7 +14,6 @@ async function buildShadowMaterial(light, translate, scale, vertexPath, fragment
 
     let vertexShader = await getShaderString(vertexPath);
     let fragmentShader = await getShaderString(fragmentPath);
-
     return new ShadowMaterial(light, translate, scale, vertexShader, fragmentShader);
 
 }
