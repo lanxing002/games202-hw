@@ -15,25 +15,31 @@ class DirectionalLight {
         }
     }
 
-    CalcLightMVP(translate, scale) {
-        let lightMVP = mat4.create();
-        let modelMatrix = mat4.create();
+    CalcLightVP() {
+        let vpMat = mat4.create();
         let viewMatrix = mat4.create();
         let projectionMatrix = mat4.create();
 
-        // Model transform
+        // View transform
+        let c = new THREE.PerspectiveCamera(80.0, 1.0, 1.0, 800.0)
+        c.updateProjectionMatrix();
+        mat4.copy(projectionMatrix, c.projectionMatrix.elements);
+        mat4.ortho(projectionMatrix, -150, 150, -150, 150, 1, 1200);
+
+        mat4.lookAt(viewMatrix, this.lightPos, this.focalPoint, this.lightUp);
+        mat4.multiply(vpMat, projectionMatrix, viewMatrix);
+
+        return vpMat;
+    }
+
+    CalcLightMVP(translate, scale) {
+        let lightMVP = mat4.create();
+        let modelMatrix = mat4.create();
+        let vp = this.CalcLightVP();
+
         mat4.translate(modelMatrix, modelMatrix, translate);
         mat4.scale(modelMatrix, modelMatrix, scale);
-        // View transform
-        mat4.lookAt(viewMatrix, this.lightPos, this.focalPoint, this.lightUp);
-        // Projection transform
-        let c = new THREE.PerspectiveCamera(80, 1, 1, 800)
-        c.updateProjectionMatrix()
-        mat4.ortho(projectionMatrix, -150, 150, -150, 150, 1, 600);
-        //mat4.copy(projectionMatrix, c.projectionMatrix.elements);
-        mat4.multiply(lightMVP, projectionMatrix, viewMatrix);
-        mat4.multiply(lightMVP, lightMVP, modelMatrix);
-
+        mat4.multiply(lightMVP, vp, modelMatrix);
         return lightMVP;
     }
 }

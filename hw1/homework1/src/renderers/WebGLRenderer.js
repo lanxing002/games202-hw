@@ -51,7 +51,7 @@ class WebGLRenderer {
             if (this.lights[l].entity.hasShadowMap == true) {
                 for (let i = 0; i < this.shadowMeshes.length; i++) {
                     let mesh = this.shadowMeshes[i];
-                    mesh.material.uniforms.uLightMVP.value = this.lights[l].entity.CalcLightMVP(mesh.mesh.transform.translate, mesh.mesh.transform.scale);
+                    mesh.material.uniforms.uLightVP.value = this.lights[l].entity.CalcLightVP();
                     mesh.draw(this.camera);
                 }
             }
@@ -59,7 +59,7 @@ class WebGLRenderer {
             // Camera pass
             for (let i = 0; i < this.meshes.length; i++) {
                 let mesh = this.meshes[i];
-                mesh.material.uniforms.uLightMVP.value = this.lights[l].entity.CalcLightMVP(mesh.mesh.transform.translate, mesh.mesh.transform.scale);
+                mesh.material.uniforms.uLightVP.value = this.lights[l].entity.CalcLightVP();
                 this.gl.useProgram(this.meshes[i].shader.program.glShaderProgram);
                 this.gl.uniform3fv(this.meshes[i].shader.program.uniforms.uLightPos, this.lights[l].entity.lightPos);
                 this.meshes[i].draw(this.camera);
