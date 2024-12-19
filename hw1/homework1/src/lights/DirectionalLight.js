@@ -15,6 +15,7 @@ class DirectionalLight {
         }
     }
 
+
     CalcLightVP() {
         let vpMat = mat4.create();
         let viewMatrix = mat4.create();
