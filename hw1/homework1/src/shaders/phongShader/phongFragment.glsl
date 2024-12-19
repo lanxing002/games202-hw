@@ -15,11 +15,12 @@ varying highp vec3 vFragPos;
 varying highp vec3 vNormal;
 
 // Shadow map related variables
-#define NUM_SAMPLES 16
+#define NUM_SAMPLES 64
 #define BLOCKER_SEARCH_NUM_SAMPLES NUM_SAMPLES
 #define PCF_NUM_SAMPLES NUM_SAMPLES
 #define NUM_RINGS 10
 
+#define SHADOW_BISA 0.001
 #define EPS 1e-3
 #define PI 3.141592653589793
 #define PI2 6.283185307179586
@@ -84,13 +85,24 @@ void uniformDiskSamples( const in vec2 randomSeed ) {
 }
 
 float findBlocker( sampler2D shadowMap,  vec2 uv, float zReceiver ) {
-	return 1.0;
+  vec2 dir = vec2(1.0 / 2048.0);
+  poissonDiskSamples(uv.xy);
+  float sum = .0;
+  float num = .0;
+  for( int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++ ) {
+    vec2 uv1 = vec2(poissonDisk[i] * dir * 8.0 + uv.xy);
+    float block_depth = unpack(texture2D(shadowMap, uv1)) + 0.002;
+    float is_block = step(block_depth, zReceiver);
+    num += is_block;
+    sum += is_block * block_depth;
+  }
+  if(num < 0.1) return zReceiver;
+  else return sum / num;
 }
 
 float useShadowMap(sampler2D shadowMap, vec4 coords){
-  vec4 packedDepth = texture2D(shadowMap, coords.xy);
-  float sd = unpack(packedDepth) + 0.0002;
-  //sd = packedDepth.x + 0.008;
+  // vec4 packedDepth = texture2D(shadowMap, coords.xy);
+  float sd = unpack(texture2D(shadowMap, coords.xy)) + 0.001;
   return sd > coords.z ? 1.0 : 0.0;
 }
 
@@ -107,23 +119,38 @@ float PCF(sampler2D shadowMap, vec4 coords) {
   return 1.0 - (sum / float(NUM_SAMPLES));
 }
 
+float PCFW(sampler2D shadowMap, vec4 coords, float wsize) {
+  vec2 dir = vec2(1.0 / 2048.0);
+  poissonDiskSamples(coords.xy);
+  float sum = .0;
+  for( int i = 0; i < NUM_SAMPLES; i ++ ) {
+    vec4 uv1 = vec4(poissonDisk[i] * dir * wsize + coords.xy, coords.z, 1.0);
+    sum += (1.0 - useShadowMap(shadowMap, uv1));
+  }
+
+  return 1.0 - (sum / float(NUM_SAMPLES));
+}
+
 float PCSS(sampler2D shadowMap, vec4 coords){
 
   // STEP 1: avgblocker depth
+  float block_depth = findBlocker(shadowMap, coords.xy, coords.z);
+  float dis  = coords.z - block_depth;
+  if(dis < 0.000001) return 1.0;
+  return dis * 40.0;
 
-  // STEP 2: penumbra size
 
-  // STEP 3: filtering
-  
-  return 1.0;
-
+  float w = dis / block_depth * 1.0 * 32.0;
+  w = clamp(w, 0.0, 32.0);
+  return w / 16.0;
+  // return PCFW(shadowMap, coords, w); 
 }
 
 
 vec3 blinnPhong() {
   vec3 color = texture2D(uSampler, vTextureCoord).rgb;
   color = pow(color, vec3(2.2));
-
+  color = vec3(0.23, 0.23, 0.23);
   vec3 ambient = 0.05 * color;
 
   vec3 lightDir = normalize(uLightPos);
@@ -150,10 +177,11 @@ void main(void) {
   pos.xyz = (pos.xyz + 1.0) * 0.5;
 
   float visibility;
-  visibility = useShadowMap(uShadowMap, pos);
-  visibility = 1.0;
-  visibility = PCF(uShadowMap, pos);
-  //visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
+  // visibility = useShadowMap(uShadowMap, pos);
+  // visibility = 1.0;
+  // visibility = PCFW(uShadowMap, pos, 64.0);
+   visibility = PCSS(uShadowMap, pos);
+  // vec3 cv = vec3(visibility, 1.0, 1.0);
 
   vec3 phongColor = blinnPhong();
   gl_FragColor = vec4(phongColor * visibility, 1.0);

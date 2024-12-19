@@ -1,2 +1,2 @@
 set RENDERDOC_HOOK_EGL=0
-"C:\Users\Lenovo\Downloads\Compressed\Win_x64-1000027-chrome-win\chrome-win\chrome.exe"  --disable-web-security --no-sandbox --disable-gpu-sandbox  --gpu-startup-dialog --disable-direct-composition
+"C:\Program Files\Google\Chrome\Application\chrome.exe"  --disable-gpu-sandbox --gpu-startup-dialog --disable-direct-composition
